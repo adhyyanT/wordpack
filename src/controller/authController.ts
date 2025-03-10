@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { TAppUserRequest, TAppUserResponse } from "../model/AppUser";
+import { AppUser, TAppUserRequest, TAppUserResponse } from "../model/AppUser";
 
 class AuthController {
   private static authController?: AuthController;
@@ -12,16 +12,23 @@ class AuthController {
     return this.authController;
   }
 
-  login(
+  async login(
     req: Request<unknown, TAppUserResponse, TAppUserRequest>,
     res: Response
   ) {
     /***
      * Add authentication using jwt and add service layer
      */
-    const body = req.body;
-    console.log(body);
-    res.status(200).json(body);
+    try {
+      const body = req.body;
+      console.log(body);
+      const appUser = new AppUser(body);
+      const savedUser = await appUser.save();
+      console.log(savedUser);
+      res.status(200).json(savedUser);
+    } catch (error) {
+      res.status(500).json(error);
+    }
   }
 }
 export default AuthController.getInstance();
