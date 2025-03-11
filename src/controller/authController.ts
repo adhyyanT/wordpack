@@ -1,5 +1,10 @@
 import { Request, Response } from "express";
-import { AppUser, TAppUserRequest, TAppUserResponse } from "../model/AppUser";
+import {
+  AppUser,
+  TAppUserRegisterRequest,
+  TAppUserResponse,
+} from "../model/AppUser";
+import authService from "../service/authService";
 
 class AuthController {
   private static authController?: AuthController;
@@ -12,21 +17,19 @@ class AuthController {
     return this.authController;
   }
 
-  async login(
-    req: Request<unknown, TAppUserResponse, TAppUserRequest>,
-    res: Response
+  async register(
+    req: Request<unknown, unknown, TAppUserRegisterRequest>,
+    res: Response<TAppUserResponse | unknown>
   ) {
     /***
      * Add authentication using jwt and add service layer
      */
     try {
-      const body = req.body;
-      console.log(body);
-      const appUser = new AppUser(body);
-      const savedUser = await appUser.save();
-      console.log(savedUser);
+      const savedUser = await authService.register(req.body);
+      authService.generateToken(savedUser, res);
       res.status(200).json(savedUser);
     } catch (error) {
+      console.log("here");
       res.status(500).json(error);
     }
   }

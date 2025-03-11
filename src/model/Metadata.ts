@@ -8,3 +8,7 @@ export type Timestamps = {
 export type MetadataWithTimestamps = {
   createdBy: mongoose.Types.ObjectId;
 } & Timestamps;
+
+export type Id = {
+  id: mongoose.Types.ObjectId;
+};

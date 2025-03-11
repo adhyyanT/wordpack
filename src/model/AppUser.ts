@@ -1,5 +1,6 @@
-import { InferSchemaType, model, Schema } from "mongoose";
+import mongoose, { InferSchemaType, model, Schema } from "mongoose";
 import * as z from "zod";
+import { Id } from "./Metadata";
 
 const appUserSchema = new Schema(
   {
@@ -23,12 +24,12 @@ const appUserSchema = new Schema(
 );
 
 export const AppUser = model("AppUser", appUserSchema);
-
 export type TAppUser = InferSchemaType<typeof appUserSchema>;
 
-export type TAppUserRequest = Omit<TAppUser, "createdAt" | "updatedAt">;
+export type TAppUserRegisterRequest = Omit<TAppUser, "createdAt" | "updatedAt">;
+export type TAppUserLoginRequest = Omit<TAppUserRegisterRequest, "name">;
 
-export type TAppUserResponse = Omit<TAppUser, "password">;
+export type TAppUserResponse = Omit<TAppUser, "password"> & Id;
 
 export const TAppUserValidationSchema = z.object({
   email: z.string().email(),

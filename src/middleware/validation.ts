@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { TAppUserRequest, TAppUserValidationSchema } from "../model/AppUser";
 import * as z from "zod";
+import { TAppUserValidationSchema } from "../model/AppUser";
 
 export const AppUserValidation =
   (schema: typeof TAppUserValidationSchema) =>
