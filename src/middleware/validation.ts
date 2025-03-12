@@ -1,10 +1,19 @@
 import { NextFunction, Request, Response } from "express";
 import * as z from "zod";
-import { TAppUserValidationSchema } from "../model/AppUser";
+import {
+  TAppUserLoginRequest,
+  TAppUserLoginValidationSchema,
+  TAppUserRegisterRequest,
+  TAppUserRegisterValidationSchema,
+} from "../model/AppUser";
 
 export const AppUserValidation =
-  (schema: typeof TAppUserValidationSchema) =>
-  (req: Request, res: Response, next: NextFunction) => {
+  <T extends TAppUserLoginRequest | TAppUserRegisterRequest>(
+    schema:
+      | typeof TAppUserLoginValidationSchema
+      | typeof TAppUserRegisterValidationSchema
+  ) =>
+  (req: Request<unknown, unknown, T>, res: Response, next: NextFunction) => {
     try {
       schema.parse(req.body);
       next();

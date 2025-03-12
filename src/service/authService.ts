@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import {
   AppUser,
+  TAppUserLoginRequest,
   TAppUserRegisterRequest,
   TAppUserResponse,
 } from "../model/AppUser";
@@ -25,19 +26,51 @@ class AuthService {
     return this._authService;
   }
 
-  async register(user: TAppUserRegisterRequest): Promise<TAppUserResponse> {
+  async register(
+    user: TAppUserRegisterRequest
+  ): Promise<TAppUserResponse | null> {
+    const opUser = await AppUser.findOne({ email: user.email });
+    if (opUser) {
+      return null;
+    }
     user.password = await bcrypt.hash(user.password, this._salt);
     const newUser = new AppUser(user);
     const savedUser = await newUser.save();
-    const responseUser = {
+    const responseUser: TAppUserResponse = {
       id: savedUser._id,
       createdAt: savedUser.createdAt,
       email: savedUser.email,
       name: savedUser.name,
       updatedAt: savedUser.updatedAt,
+      wordPacks: savedUser.wordPacks,
     };
     return responseUser;
   }
+
+  async login(
+    loginUser: TAppUserLoginRequest,
+    res: Response
+  ): Promise<TAppUserResponse | null> {
+    const user = await AppUser.findOne({ email: loginUser.email });
+    if (!user) {
+      return null;
+    }
+    const isMatch = await bcrypt.compare(loginUser.password, user.password);
+    if (!isMatch) {
+      return null;
+    }
+    const resUser: TAppUserResponse = {
+      createdAt: user.createdAt,
+      email: user.email,
+      id: user.id,
+      name: user.name,
+      updatedAt: user.updatedAt,
+      wordPacks: user.wordPacks,
+    };
+    this.generateToken(resUser, res);
+    return resUser;
+  }
+
   generateToken(user: TAppUserResponse, res: Response, setHeader = true) {
     const token = jwt.sign(user, this._secret, {
       expiresIn: "1h",
