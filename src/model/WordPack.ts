@@ -1,4 +1,7 @@
 import mongoose, { InferSchemaType, Schema } from "mongoose";
+import * as z from "zod";
+import { TWord, TWordResponse, TWordValidation } from "./Word";
+import { Id } from "./Metadata";
 
 const wordPackSchema = new mongoose.Schema(
   {
@@ -33,3 +36,18 @@ const wordPackSchema = new mongoose.Schema(
 export const WordPack = mongoose.model("word_pack", wordPackSchema);
 
 export type TWordPack = InferSchemaType<typeof wordPackSchema>;
+export type TWordPackRequest = Omit<TWordPack, "createdAt" | "updatedAt">;
+export type TWordPopulated = Omit<TWordPack, "words"> & { words: TWord[] } & {
+  _id: mongoose.Types.ObjectId;
+};
+export type TWordPackResponse = Omit<
+  TWordPack,
+  "createdAt" | "updatedAt" | "words"
+> &
+  Id & { words: TWordResponse[] };
+export const TWordPackValidation = z.object({
+  title: z.string().min(4).max(25),
+  description: z.string().min(4).max(100),
+  isPublic: z.boolean(),
+  words: TWordValidation.array().optional(),
+});

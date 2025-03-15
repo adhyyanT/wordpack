@@ -5,6 +5,7 @@ import morgan from "morgan";
 import "./config/database";
 import authRoute from "./routes/authRoutes";
 import { ROUTE_PREFIX } from "./constants/constant";
+import wordPackRoute from "./routes/wordPackRoutes";
 
 const app = express();
 app.use(cors());
@@ -12,13 +13,9 @@ app.use(express.json());
 app.use(morgan("short"));
 
 app.use(`${ROUTE_PREFIX}/auth`, authRoute);
+app.use(`${ROUTE_PREFIX}/word-pack`, wordPackRoute);
 
-/**
- * Todo: implement wordPack model and route
- */
-// app.use(`${ROUTE_PREFIX}`);
 app.get("/health-check", (_, res) => {
-  console.log("here");
   res.status(200).json("UP");
 });
 

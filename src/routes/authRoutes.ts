@@ -1,6 +1,6 @@
 import { Router } from "express";
 import authController from "../controller/authController";
-import { AppUserValidation } from "../middleware/validation";
+import { requestBodyValidation } from "../middleware/validation";
 import {
   TAppUserLoginValidationSchema,
   TAppUserRegisterValidationSchema,
@@ -10,12 +10,12 @@ const router = Router();
 
 router.post(
   "/register",
-  AppUserValidation(TAppUserRegisterValidationSchema),
+  requestBodyValidation(TAppUserRegisterValidationSchema),
   authController.register
 );
 router.post(
   "/login",
-  AppUserValidation(TAppUserLoginValidationSchema),
+  requestBodyValidation(TAppUserLoginValidationSchema),
   authController.login
 );
 export default router;

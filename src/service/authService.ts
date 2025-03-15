@@ -76,7 +76,7 @@ class AuthService {
       expiresIn: "1h",
     });
     if (setHeader) {
-      res.set("Authorization", token);
+      res.set("authorization", token);
     }
     return token;
   }
